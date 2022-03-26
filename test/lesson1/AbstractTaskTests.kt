@@ -1,6 +1,7 @@
 package lesson1
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
+import org.junit.jupiter.api.assertThrows
 import util.PerfResult
 import util.estimate
 import java.io.BufferedWriter
@@ -133,6 +134,34 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         try {
             sortTemperatures("input/empty.txt", "temp.txt")
             assertFileContent("temp.txt", "")
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in2.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                    -273.0
+                    -272.5
+                    -272.0
+                    -271.5
+                    -271.0
+                    498.0
+                    498.5
+                    499.0
+                    499.5
+                    500.0
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in2.txt", "temp.txt")
+            assertThrows<IllegalArgumentException> {
+                sortTemperatures("input/temp_in3.txt", "temp.txt")
+            }
         } finally {
             File("temp.txt").delete()
         }
@@ -350,6 +379,14 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         val result = arrayOf(null, null, null, null, null, 1, 3, 9, 13, 18, 23)
         mergeArrays(arrayOf(4, 9, 15, 20, 23), result)
         assertArrayEquals(arrayOf(1, 3, 4, 9, 9, 13, 15, 18, 20, 23, 23), result)
+
+        val result2 = arrayOf(null, 1000, null, 10000, null, 100000, null, 1000000)
+        mergeArrays(arrayOf(2000, 20000, 200000, 2000000), result2)
+        assertArrayEquals(arrayOf(1000, 2000, 10000, 20000, 100000, 200000, 1000000, 2000000), result2)
+
+        val result3 = arrayOf(999999, 99999, 9999, 999, 99, 9, null, null, null, null, null)
+        mergeArrays(arrayOf(1, 2, 3, 4, 5), result3)
+        assertArrayEquals(arrayOf(1, 2, 3, 4, 5, 9, 99, 999, 9999, 99999, 999999), result3)
 
         fun testGeneratedArrays(
             firstSize: Int,

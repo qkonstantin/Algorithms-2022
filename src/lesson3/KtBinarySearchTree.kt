@@ -90,6 +90,19 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
+        private var stack = Stack<Node<T>>()
+        private var current: Node<T>? = null
+
+        private fun pushToLeft(node: Node<T>?) {
+            if (node != null) {
+                stack.push(node)
+                pushToLeft(node.left)
+            }
+        }
+
+        init {
+            pushToLeft(root)
+        }
 
         /**
          * Проверка наличия следующего элемента
@@ -101,9 +114,13 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
+
+        /*
+        Быстродействие: O(1)
+         */
+
         override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
+            return stack.isNotEmpty()
         }
 
         /**
@@ -119,9 +136,17 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Средняя
          */
+
+        /*
+        Быстродействие: O(logN)
+         */
+
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            if (stack.isEmpty()) throw NoSuchElementException()
+            val node = stack.pop()
+            current = node
+            pushToLeft(node.right)
+            return node.value
         }
 
         /**
@@ -136,9 +161,15 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Сложная
          */
+
+        /*
+        Быстродействие: O(n)
+         */
+
         override fun remove() {
-            // TODO
-            throw NotImplementedError()
+            if (current == null) throw IllegalStateException()
+            remove(current!!.value)
+            current = null
         }
 
     }

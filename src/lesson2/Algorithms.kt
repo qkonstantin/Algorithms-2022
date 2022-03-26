@@ -2,6 +2,9 @@
 
 package lesson2
 
+import kotlin.math.floor
+import kotlin.math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -79,8 +82,18 @@ fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
  * Общий комментарий: решение из Википедии для этой задачи принимается,
  * но приветствуется попытка решить её самостоятельно.
  */
+
+/*
+Быстродействие: O(n)
+Ресурсоёмкость: O(1)
+ */
+
 fun josephTask(menNumber: Int, choiceInterval: Int): Int {
-    TODO()
+    var res = 0
+    for (i in 1..menNumber) {
+        res = (res + choiceInterval) % i
+    }
+    return res + 1
 }
 
 /**
@@ -108,6 +121,30 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
+
+/*
+Быстродействие: O(n*log(log(n)))
+Ресурсоёмкость: O(n)
+ */
+
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    if (limit <= 1)
+        return 0
+    val sieve = Array(limit + 1) { true }
+    for (i in 2..floor(sqrt(limit.toDouble())).toInt()) {
+        if (sieve[i]) {
+            var j = i * i
+            while (j <= limit) {
+                sieve[j] = false
+                j += i
+            }
+        }
+
+    }
+    var result = 0
+    for (i in 2..limit) {
+        if (sieve[i])
+            result++
+    }
+    return result
 }

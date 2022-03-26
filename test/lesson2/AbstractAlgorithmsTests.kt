@@ -71,6 +71,12 @@ abstract class AbstractAlgorithmsTests {
             assertEquals(1, josephTask(menNumber, 2))
             menNumber *= 2
         }
+        for (i in 1..10000) {
+            assertEquals(i, josephTask(i, 1))
+        }
+        assertEquals(4, josephTask(10, 3))
+        assertEquals(73, josephTask(100, 2))
+        assertEquals(3575740, josephTask(9999999, 999))
     }
 
     fun longestCommonSubstring(longestCommonSubstring: (String, String) -> String) {
@@ -123,6 +129,11 @@ abstract class AbstractAlgorithmsTests {
     }
 
     fun calcPrimesNumber(calcPrimesNumber: (Int) -> Int) {
+        assertEquals(0, calcPrimesNumber(-999999999))
+        assertEquals(25, calcPrimesNumber(100))
+        assertEquals(95, calcPrimesNumber(500))
+        assertEquals(5761455, calcPrimesNumber(100000000))
+
         assertEquals(0, calcPrimesNumber(-1))
         assertEquals(0, calcPrimesNumber(1))
         assertEquals(1, calcPrimesNumber(2))

@@ -2,6 +2,9 @@
 
 package lesson1
 
+import java.io.File
+import java.lang.IllegalArgumentException
+
 /**
  * Сортировка времён
  *
@@ -96,8 +99,26 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+
+/*
+Быстродействие: O(NLogN)
+Ресурсоёмкость: O(n)
+ */
+
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val numbers = mutableListOf<Double>()
+    for (line in File(inputName).readLines()) {
+        if (line.toDouble() > 500.0 || line.toDouble() < -273.0)
+            throw IllegalArgumentException()
+        numbers.add(line.toDouble())
+    }
+    numbers.sort()
+    val writer = File(outputName).bufferedWriter()
+    for (number in numbers) {
+        writer.write(number.toString())
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -147,7 +168,19 @@ fun sortSequence(inputName: String, outputName: String) {
  *
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
-fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
-    TODO()
-}
 
+/*
+Быстродействие: O(NLogN)
+Ресурсоёмкость: O(n)
+ */
+
+fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
+    var size = 0
+    for (i in second.indices) {
+        if (second[i] == null) {
+            second[i] = first[size]
+            size++
+        }
+    }
+    second.sort()
+}
