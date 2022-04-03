@@ -79,8 +79,42 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      *
      * Средняя
      */
+
+    /*
+    Быстродействие: O(logN) - лучший случай, O(N) - худший случай
+    Ресурсоёмкость: O(1)
+    */
+
     override fun remove(element: T): Boolean {
-        TODO()
+        if (!contains(element) || root == null) return false
+        root = remove(root, element)
+        size--
+        return true
+    }
+
+    private fun remove(current: Node<T>?, removeValue: T): Node<T>? {
+        val comparison = removeValue.compareTo(current!!.value)
+        if (comparison < 0) {
+            current.left = remove(current.left, removeValue)
+            return current
+        }
+        if (comparison > 0) {
+            current.right = remove(current.right, removeValue)
+            return current
+        }
+        when {
+            current.left == null -> return current.right
+            current.right == null -> return current.left
+            current.right == null && current.left == null -> return null
+        }
+        var node = current.right
+        while (node!!.left != null)
+            node = node.left
+        val minNode = Node(node.value)
+        minNode.right = current.right
+        minNode.left = current.left
+        minNode.right = remove(minNode.right, minNode.value)
+        return minNode
     }
 
     override fun comparator(): Comparator<in T>? =
@@ -90,12 +124,12 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
-        private var stack = Stack<Node<T>>()
+        private var deque = ArrayDeque<Node<T>>()
         private var current: Node<T>? = null
 
         private fun pushToLeft(node: Node<T>?) {
             if (node != null) {
-                stack.push(node)
+                deque.push(node)
                 pushToLeft(node.left)
             }
         }
@@ -120,7 +154,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          */
 
         override fun hasNext(): Boolean {
-            return stack.isNotEmpty()
+            return deque.isNotEmpty()
         }
 
         /**
@@ -142,8 +176,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          */
 
         override fun next(): T {
-            if (stack.isEmpty()) throw NoSuchElementException()
-            val node = stack.pop()
+            if (deque.isEmpty()) throw NoSuchElementException()
+            val node = deque.pop()
             current = node
             pushToLeft(node.right)
             return node.value

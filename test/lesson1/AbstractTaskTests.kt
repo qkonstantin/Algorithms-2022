@@ -56,6 +56,22 @@ abstract class AbstractTaskTests : AbstractFileTests() {
 
     protected fun sortAddresses(sortAddresses: (String, String) -> Unit) {
         try {
+            sortAddresses("input/addr_in0.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                    Итальянская 3 - Старостин Фёдор
+                    Конюшенная 4 - Масленников Илья
+                    Миллионная 5 - Борисова Владилена, Поздняков Никита
+                    Невский 54 - Малышева Валерия, Уткин Никита, Фомичева Варвара
+                    Петровская 2 - Исаев Олег
+                    Фонтанки 21 - Плотникова Алиса
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
             sortAddresses("input/addr_in1.txt", "temp.txt")
             assertFileContent(
                 "temp.txt",

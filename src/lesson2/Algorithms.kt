@@ -2,9 +2,6 @@
 
 package lesson2
 
-import kotlin.math.floor
-import kotlin.math.sqrt
-
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -107,8 +104,36 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+
+/*
+Быстродействие: O(n^2)
+Ресурсоёмкость: O(n)
+ */
+
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    if (first == "" || second == "") return ""
+    var maxIn = 0
+    var subLength = 0
+    val matrix = Array(first.length) { IntArray(second.length) }
+    for (i in first.indices) {
+        for (j in second.indices) {
+            if (first[i] == second[j]) {
+                if (i != 0 && j != 0)
+                    matrix[i][j] = matrix[i - 1][j - 1] + 1
+                else matrix[i][j]++
+                if (subLength < matrix[i][j]) {
+                    subLength = matrix[i][j]
+                    maxIn = i
+                }
+            } else matrix[i][j] = 0
+        }
+    }
+    val result = StringBuffer()
+    for (m in 0 until subLength) {
+        result.append(first[maxIn])
+        maxIn--
+    }
+    return result.reverse().toString()
 }
 
 /**
@@ -128,23 +153,19 @@ fun longestCommonSubstring(first: String, second: String): String {
  */
 
 fun calcPrimesNumber(limit: Int): Int {
+    var result = 0
     if (limit <= 1)
         return 0
-    val sieve = Array(limit + 1) { true }
-    for (i in 2..floor(sqrt(limit.toDouble())).toInt()) {
-        if (sieve[i]) {
-            var j = i * i
-            while (j <= limit) {
-                sieve[j] = false
-                j += i
-            }
-        }
-
-    }
-    var result = 0
+    val sieve = BooleanArray(limit + 1) { true }
     for (i in 2..limit) {
-        if (sieve[i])
+        if (sieve[i]) {
+            var j = 2
+            while (i * j <= limit) {
+                sieve[i * j] = false
+                j++
+            }
             result++
+        }
     }
     return result
 }

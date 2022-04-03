@@ -162,6 +162,13 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+        val test = KtBinarySearchTree<Int>()
+        test.add(50)
+        test.add(70)
+        test.add(40)
+        test.add(10)
+        test.remove(10)
+        assertEquals(3, test.size)
     }
 
     protected fun doIteratorTest() {
@@ -205,6 +212,10 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+        val test = KtBinarySearchTree<Int>()
+        test.add(50)
+        assertEquals(50, test.iterator().next())
+        assertEquals(true, test.iterator().hasNext())
     }
 
     protected fun doIteratorRemoveTest() {
@@ -272,6 +283,9 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+        val test = KtBinarySearchTree<Int>()
+        test.add(50)
+        assertFailsWith<IllegalStateException> { test.iterator().remove() }
     }
 
     protected fun doSubSetTest() {

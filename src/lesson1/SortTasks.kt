@@ -2,8 +2,8 @@
 
 package lesson1
 
-import java.io.File
-import java.lang.IllegalArgumentException
+import java.io.*
+
 
 /**
  * Сортировка времён
@@ -65,8 +65,32 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
+/*
+Быстродействие: O(NLogN)
+Ресурсоёмкость: O(n)
+ */
+
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    val result = sortedMapOf<String, MutableList<String>>(compareBy<String> {
+        it.split(" ")[0]
+    }.thenBy {
+        it.split(" ")[1].toInt()
+    })
+    for (line in File(inputName).readLines()) {
+        val name = line.split(" - ")[0]
+        val address = line.split(" - ")[1]
+        val names = result.getOrDefault(address, mutableListOf())
+        names.add(name)
+        result[address] = names
+    }
+    result.map { it.value.sort() }
+    val writer = File(outputName).bufferedWriter()
+    for ((address, names) in result) {
+        writer.write(address + " - " + names.joinToString(", "))
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -101,21 +125,23 @@ fun sortAddresses(inputName: String, outputName: String) {
  */
 
 /*
-Быстродействие: O(NLogN)
+Быстродействие: O(n)
 Ресурсоёмкость: O(n)
  */
 
 fun sortTemperatures(inputName: String, outputName: String) {
-    val numbers = mutableListOf<Double>()
-    for (line in File(inputName).readLines()) {
+    val minTemp = 2730
+    val maxTemp = 7730
+    val temperatures = IntArray(File(inputName).readLines().size)
+    for ((index, line) in File(inputName).readLines().withIndex()) {
         if (line.toDouble() > 500.0 || line.toDouble() < -273.0)
             throw IllegalArgumentException()
-        numbers.add(line.toDouble())
+        temperatures[index] = (line.toDouble() * 10 + minTemp).toInt()
     }
-    numbers.sort()
+    val sorted = countingSort(temperatures, maxTemp)
     val writer = File(outputName).bufferedWriter()
-    for (number in numbers) {
-        writer.write(number.toString())
+    for (temperature in sorted) {
+        writer.write(((temperature - minTemp) / 10.0).toString())
         writer.newLine()
     }
     writer.close()
