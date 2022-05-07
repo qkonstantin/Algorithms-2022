@@ -4,6 +4,8 @@ package lesson5
  * Множество(таблица) с открытой адресацией на 2^bits элементов без возможности роста.
  */
 class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T>() {
+    private object removed
+
     init {
         require(bits in 2..31)
     }
@@ -75,8 +77,29 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя
      */
+
+    /**
+     * Быстродействие: O(1) - лучший случай
+     *                 O(N) - худший случай
+     * Ресурсоёмкость: O(1)
+     */
+
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        val startingIndex = element.startingIndex()
+        var i = startingIndex
+        var current = storage[i]
+
+        while (current != null) {
+            if (current == element) {
+                storage[i] = removed
+                size--
+                return true
+            }
+            i = (i + 1) % capacity
+            if (startingIndex == i) continue
+            current = storage[i]
+        }
+        return false
     }
 
     /**
@@ -90,6 +113,46 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Средняя (сложная, если поддержан и remove тоже)
      */
     override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+        return OpenAddressingSetIterator()
     }
+
+    private inner class OpenAddressingSetIterator : MutableIterator<T> {
+        var current: T? = null
+        var i = 0
+        var totalElements = 0
+
+        /**
+         * Быстродействие: O(N)
+         * Ресурсоёмкость: O(1)
+         */
+        override fun next(): T {
+            if (!hasNext()) throw NoSuchElementException()
+            while (storage[i] == null || storage[i] == removed) {
+                i++
+            }
+            current = storage[i] as T
+            i++
+            totalElements++
+            return current as T
+        }
+
+        /**
+         * Быстродействие: O(1)
+         * Ресурсоёмкость: O(1)
+         */
+        override fun remove() {
+            check(current != null)
+            storage[i - 1] = removed
+            current = null
+            totalElements--
+            size--
+        }
+
+        /**
+         * Быстродействие: O(1)
+         * Ресурсоёмкость: O(1)
+         */
+        override fun hasNext(): Boolean = totalElements < size
+    }
+
 }

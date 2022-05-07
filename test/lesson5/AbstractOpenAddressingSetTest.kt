@@ -1,5 +1,6 @@
 package lesson5
 
+import org.junit.jupiter.api.assertThrows
 import ru.spbstu.kotlin.generate.util.nextString
 import java.util.*
 import kotlin.NoSuchElementException
@@ -77,6 +78,40 @@ abstract class AbstractOpenAddressingSetTest {
                 )
             }
         }
+        val emptySet = KtOpenAddressingSet<Int>(20)
+        assertEquals(0, emptySet.size)
+        assertFalse { emptySet.remove(random.nextInt()) }
+        val n = 10000
+        val bigSet = KtOpenAddressingSet<Int>(20)
+        val elements = MutableList(n) { random.nextInt() }
+        var size = 0
+        for (i in 0 until n) {
+            bigSet.add(elements[i])
+            if (bigSet.size == size)
+                elements.removeAt(i)
+            else
+                size++
+        }
+        val numbersCount = size
+        for (i in 0 until numbersCount) {
+            val index = random.nextInt(numbersCount - i) + i
+            val a = elements[index]
+            elements[index] = elements[i]
+            elements[i] = a
+        }
+        var notExistingElement = random.nextInt(n)
+        while (notExistingElement in elements) {
+            notExistingElement = random.nextInt(n)
+        }
+        assertEquals(size, bigSet.size)
+        assertFalse { bigSet.remove(notExistingElement) }
+        for (i in 0 until numbersCount) {
+            assertTrue { bigSet.containsAll(elements.subList(i + 1, numbersCount)) }
+            assertTrue { bigSet.remove(elements[i]) }
+            size--
+            assertEquals(size, bigSet.size)
+            assertFalse { bigSet.contains(elements[i]) }
+        }
     }
 
     protected fun doIteratorTest() {
@@ -118,6 +153,28 @@ abstract class AbstractOpenAddressingSetTest {
                 openAddressingSetIter.next()
             }
             println("All clear!")
+        }
+        val n = 1000
+        val mySet = KtOpenAddressingSet<Int>(25)
+        val controlSet = mutableSetOf<Int>()
+        assertFalse(mySet.iterator().hasNext())
+        for (i in 0 until n) {
+            val element = random.nextInt(n)
+            mySet.add(element)
+            controlSet.add(element)
+        }
+        val iterator1 = mySet.iterator()
+        val iterator2 = mySet.iterator()
+        while (iterator1.hasNext()) {
+            assertEquals(iterator2.next(), iterator1.next())
+        }
+        val newIterator = mySet.iterator()
+        while (newIterator.hasNext()) {
+            controlSet.remove(newIterator.next())
+        }
+        assertTrue(controlSet.isEmpty())
+        assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
+            newIterator.next()
         }
     }
 
@@ -176,5 +233,29 @@ abstract class AbstractOpenAddressingSetTest {
             }
             println("All clear!")
         }
+        val n = 1000
+        val mySet = KtOpenAddressingSet<Int>(25)
+        val setForChecking = KtOpenAddressingSet<Int>(25)
+        for (i in 0 until n) {
+            val element = random.nextInt(n * 5)
+            mySet.add(element)
+            setForChecking.add(element)
+        }
+        val iterator = mySet.iterator()
+        val controlIterator = setForChecking.iterator()
+        var i = 0
+        var size = setForChecking.size
+        assertThrows<IllegalStateException> { iterator.remove() }
+        for (element in controlIterator) {
+            assertEquals(element, iterator.next())
+            if (i % 5 == 0) {
+                iterator.remove()
+                size--
+                assertEquals(size, mySet.size)
+                assertThrows<IllegalStateException> { iterator.remove() }
+            }
+            i++
+        }
+        assertFalse { iterator.hasNext() }
     }
 }

@@ -4,6 +4,11 @@ import kotlin.test.assertEquals
 
 abstract class AbstractDynamicTests {
     fun longestCommonSubSequence(longestCommonSubSequence: (String, String) -> String) {
+        assertEquals("дворовый", longestCommonSubSequence("дворцовый", "дворовый"))
+        assertEquals("пдорожн", longestCommonSubSequence("подорожник", "придорожный"))
+        assertEquals("игрй", longestCommonSubSequence("игрушечный", "играющий"))
+        assertEquals("расии", longestCommonSubSequence("красильщик", "раскрашивание"))
+        assertEquals("листоный", longestCommonSubSequence("листовидный", "листообразный"))
         assertEquals("", longestCommonSubSequence("мой мир", "я"))
         assertEquals("1", longestCommonSubSequence("1", "1"))
         assertEquals("13", longestCommonSubSequence("123", "13"))
@@ -35,9 +40,38 @@ abstract class AbstractDynamicTests {
                 """.trimIndent()
             ).length, "Answer must have length of $expectedLength2"
         )
+        val expectedLength3 = """NevergonnaNevergonnaNevergonnaNevergonnaNevergonnaNevergonna""".length
+        assertEquals(
+            expectedLength3, longestCommonSubSequence(
+                """
+Never gonna give you up
+Never gonna let you down
+Never gonna run around and desert you
+                """.trimIndent(),
+                """
+Never gonna make you cry
+Never gonna say goodbye
+Never gonna tell a lie and hurt you
+                """.trimIndent()
+            ).length, "Answer must have length of $expectedLength3"
+        )
     }
 
     fun longestIncreasingSubSequence(longestIncreasingSubSequence: (List<Int>) -> List<Int>) {
+        assertEquals(listOf(-1), longestIncreasingSubSequence(listOf(-1, -2, -3, -4, -5, -6, -7, -8, -9)))
+        assertEquals(
+            listOf(-9, -8, -7, -6, -5, -4, -3, -2, -1),
+            longestIncreasingSubSequence(listOf(-9, -8, -7, -6, -5, -4, -3, -2, -1))
+        )
+        assertEquals(listOf(0), longestIncreasingSubSequence(listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
+        assertEquals(listOf(9), longestIncreasingSubSequence(listOf(9, 8, 7, 6, 5, 4, 3, 2, 1)))
+        assertEquals(listOf(4, 5, 6, 7), longestIncreasingSubSequence(listOf(9, 8, 4, 5, 2, 3, 6, 7)))
+        assertEquals(listOf(9, 99, 999, 9999), longestIncreasingSubSequence(listOf(9, 1, 99, 1, 999, 1, 9999)))
+        assertEquals(listOf(22, 65, 66, 89), longestIncreasingSubSequence(listOf(22, 94, 12, 65, 66, 89, 78, 12, 20)))
+        assertEquals(
+            listOf(100, 125, 150, 175, 185, 195, 500, 600, 650, 900),
+            longestIncreasingSubSequence(listOf(100, 200, 125, 300, 150, 400, 175, 185, 195, 500, 600, 550, 650, 900))
+        )
         assertEquals(listOf(), longestIncreasingSubSequence(listOf()))
         assertEquals(listOf(1), longestIncreasingSubSequence(listOf(1)))
         assertEquals(listOf(1, 2), longestIncreasingSubSequence(listOf(1, 2)))

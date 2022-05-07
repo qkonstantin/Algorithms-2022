@@ -14,8 +14,41 @@ package lesson7
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
  */
+
+/**
+ * Быстродействие: O(n * m)
+ * Ресурсоёмкость: O(n * m)
+ */
 fun longestCommonSubSequence(first: String, second: String): String {
-    TODO()
+    var m = first.length
+    var n = second.length
+    val res = Array(m + 1) { IntArray(n + 1) }
+    for (i in 1 until m + 1) {
+        for (j in 1 until n + 1) {
+            if (first[i - 1] == second[j - 1]) {
+                res[i][j] = res[i - 1][j - 1] + 1
+            } else {
+                res[i][j] = res[i - 1][j].coerceAtLeast(res[i][j - 1])
+            }
+        }
+    }
+    val output = StringBuilder()
+    while (m > 0 && n > 0) {
+        when {
+            first[m - 1] == second[n - 1] -> {
+                output.append(first[m - 1])
+                m--
+                n--
+            }
+            res[m][n - 1] == res[m][n] -> {
+                n--
+            }
+            else -> {
+                m--
+            }
+        }
+    }
+    return output.reverse().toString()
 }
 
 /**
@@ -30,8 +63,45 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
  */
+
+/**
+ * Быстродействие: O(N^2)
+ * Ресурсоёмкость: O(N)
+ */
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    val size = list.size
+    if (size <= 1) return list
+    val previous = IntArray(size)
+    val value = IntArray(size)
+
+    for (i in 0 until size) {
+        value[i] = 1
+        previous[i] = -1
+        for (j in 0 until i) {
+            val logic1 = list[j] < list[i]
+            val logic2 = value[j] + 1 > value[i]
+            if (logic1 && logic2) {
+                value[i] = value[j] + 1
+                previous[i] = j
+            }
+        }
+    }
+
+    var index = 0
+    var length = 0
+    for (i in 0 until size) {
+        if (value[i] > length) {
+            index = i
+            length = value[i]
+        }
+    }
+
+    val result: MutableList<Int> = ArrayList()
+    while (index != -1) {
+        result.add(0, list[index])
+        index = previous[index]
+    }
+    return result
 }
 
 /**
